@@ -19,6 +19,7 @@ class StringCalculator {
     std::string parseDelimiterFromBrackets(const std::string& delimiterLine);
     std::vector<int> collectNegatives(const std::vector<int>& numbers);
     std::string buildNegativeMessage(const std::vector<int>& negatives);
+    bool hasBrackets(const std::string& delimiterLine);
 };
 
 #endif  // STRINGCALCULATOR_H_

@@ -38,11 +38,15 @@ std::string StringCalculator::extractCustomDelimiter(
 
 std::string StringCalculator::parseDelimiterFromBrackets(
     const std::string& delimiterLine) {
-    if (delimiterLine.size() >= 2 && delimiterLine.front() == '[' &&
-        delimiterLine.back() == ']') {
+    if (hasBrackets(delimiterLine)) {
         return delimiterLine.substr(1, delimiterLine.size() - 2);
     }
     return delimiterLine;
+}
+
+bool StringCalculator::hasBrackets(const std::string& delimiterLine) {
+    return delimiterLine.size() >= 2 && delimiterLine.front() == '[' &&
+           delimiterLine.back() == ']';
 }
 
 // Split numbers using regex
