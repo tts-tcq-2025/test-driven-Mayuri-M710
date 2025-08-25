@@ -1,4 +1,6 @@
-#pragma once
+#ifndef STRINGCALCULATOR_H
+#define STRINGCALCULATOR_H
+
 #include <string>
 #include <vector>
 
@@ -8,8 +10,10 @@ public:
 
 private:
     std::string extractCustomDelimiter(const std::string& numbers, std::string& remainingNumbers);
-    std::string replaceDelimiters(const std::string& numbers, const std::string& delimiter);
-    std::vector<int> parseNumbers(const std::string& numbers);
-    void validateNegatives(const std::vector<int>& numbers);
-    int calculateSum(const std::vector<int>& numbers);
+    std::vector<int> splitNumbers(const std::string& input, const std::string& delimiter);
+    void checkNegatives(const std::vector<int>& numbers);
+    int sumIgnoringLarge(const std::vector<int>& numbers);
+    std::string escapeRegex(const std::string& delimiter);
 };
+
+#endif // STRINGCALCULATOR_H
