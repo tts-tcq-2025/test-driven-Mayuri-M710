@@ -20,7 +20,6 @@ jobs:
         pip install cpplint
         sudo apt-get install -y clang-tidy
         sudo apt-get install -y cppcheck
-        cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
 
     - name: cpplint
       run: |
@@ -30,6 +29,8 @@ jobs:
       run: |
         cppcheck --enable=all --error-exitcode=1 --suppress=missingIncludeSystem --std=c++17 *.cpp *.h
 
-    - name: clang-format
+    - name: clang-tidy check
       run: |
-        clang-tidy -p=. *.cpp *.h
+        # Create a compile commands database for clang-tidy
+        echo '[{"directory": ".", "command": "g++ -std=c++17 -I. StringCalculator.cpp test_StringCalculator.cpp", "file": "StringCalculator.cpp"}, {"directory": ".", "command": "g++ -std=c++17 -I. test_StringCalculator.cpp StringCalculator.cpp", "file": "test_StringCalculator.cpp"}]' > compile_commands.json
+        clang-tidy StringCalculator.cpp test_StringCalculator.cpp -- -std=c++17 -I.

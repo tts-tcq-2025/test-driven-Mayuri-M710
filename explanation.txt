@@ -1,0 +1,42 @@
+
+Code Flow:
+
+1. Entry Point
+
+The main function in test_StringCalculator.cpp calls StringCalculator::Add() with various test inputs.
+
+2. Add Method (StringCalculator::Add)
+
+Checks for empty input: Returns 0 if the input string is empty.
+
+Custom delimiter extraction: Calls extractCustomDelimiter() to determine if a custom delimiter is specified (e.g., //[***]\n).
+
+Delimiter normalization: Replaces all delimiters (custom, comma, newline) with commas for uniform processing.
+
+Number parsing: Splits the normalized string into individual numbers and converts them to integers.
+
+Negative number validation: Checks for negative numbers and throws an exception listing all negatives if any are found.
+
+Sum calculation: Sums all numbers, ignoring any greater than 1000.
+
+3. Supporting Functions
+
+extractCustomDelimiter: Parses the input for custom delimiters, handling both single and multi-character delimiters.
+
+replaceDelimiters: Replaces all instances of the delimiter and newlines with commas.
+
+parseNumbers: Converts the comma-separated string into a vector of integers.
+
+validateNegatives: Throws an exception if any negative numbers are found.
+
+calculateSum: Sums all numbers ≤ 1000.
+
+4. Test Suite
+
+The test file runs 14 test cases, covering:
+   Empty input
+   Single and multiple numbers
+   Newline delimiters
+   Ignoring numbers > 1000
+   Negative number exceptions
+   Custom single and multi-character delimiters
