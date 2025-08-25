@@ -1,263 +1,42 @@
-# StringCalculator Code Flow Explanation
 
-## Project Overview
+Code Flow:
 
-This is a Test-Driven Development (TDD) implementation of a StringCalculator in C++. The project demonstrates clean code principles with a focus on maintaining low cyclomatic complexity (CCN ≤ 3 per function).
+1. Entry Point
 
-## File Structure
+The main function in test_StringCalculator.cpp calls StringCalculator::Add() with various test inputs.
 
-```
-StringCalculator Project/
-├── StringCalculator.h          # Class declaration with method signatures
-├── StringCalculator.cpp        # Implementation with 6 focused functions
-├── test_StringCalculator.cpp   # Comprehensive test suite (14 test cases)
-├── CMakeLists.txt             # Build configuration for CMake
-└── README.md                  # TDD requirements and specifications
-```
+2. Add Method (StringCalculator::Add)
 
-## Code Architecture
+Checks for empty input: Returns 0 if the input string is empty.
 
-The StringCalculator class is designed using the Single Responsibility Principle, where each function has one specific purpose:
+Custom delimiter extraction: Calls extractCustomDelimiter() to determine if a custom delimiter is specified (e.g., //[***]\n).
 
-### StringCalculator.h
-```cpp
-class StringCalculator {
-public:
-    int Add(const std::string& numbers);           // Main entry point
+Delimiter normalization: Replaces all delimiters (custom, comma, newline) with commas for uniform processing.
 
-private:
-    std::string extractCustomDelimiter(...);       // Parse custom delimiters
-    std::string replaceDelimiters(...);            // Normalize delimiters
-    std::vector<int> parseNumbers(...);            // Extract numbers
-    void validateNegatives(...);                   // Check for negatives
-    int calculateSum(...);                         // Compute final sum
-};
-```
+Number parsing: Splits the normalized string into individual numbers and converts them to integers.
 
-## Detailed Code Flow
+Negative number validation: Checks for negative numbers and throws an exception listing all negatives if any are found.
 
-### Entry Point: StringCalculator::Add()
-**Complexity: CCN = 2**
+Sum calculation: Sums all numbers, ignoring any greater than 1000.
 
-```
-INPUT: std::string numbers
-│
-├─ if (numbers.empty()) → return 0
-│
-└─ Process non-empty input:
-   │
-   ├─ extractCustomDelimiter(numbers, remainingNumbers)
-   ├─ replaceDelimiters(remainingNumbers, delimiter)
-   ├─ parseNumbers(processedNumbers)
-   ├─ validateNegatives(parsedNumbers)
-   └─ calculateSum(parsedNumbers) → return result
-```
+3. Supporting Functions
 
-### Step 1: extractCustomDelimiter()
-**Complexity: CCN = 3**
+extractCustomDelimiter: Parses the input for custom delimiters, handling both single and multi-character delimiters.
 
-Parses input to detect custom delimiter format: `"//[delimiter]\n[numbers]"`
+replaceDelimiters: Replaces all instances of the delimiter and newlines with commas.
 
-```
-INPUT: "//[***]\n1***2***3"
-│
-├─ Check if starts with "//" AND length >= 4
-│  │
-│  ├─ Find newline position
-│  ├─ Extract delimiter section: "[***]"
-│  ├─ Check if delimiter has brackets []
-│  │  ├─ YES: Extract content between brackets → "***"
-│  │  └─ NO: Use delimiter as-is
-│  │
-│  └─ Set remainingNumbers to text after newline → "1***2***3"
-│
-└─ Return extracted delimiter: "***"
-```
+parseNumbers: Converts the comma-separated string into a vector of integers.
 
-### Step 2: replaceDelimiters()
-**Complexity: CCN = 2**
+validateNegatives: Throws an exception if any negative numbers are found.
 
-Normalizes all delimiters to commas for uniform processing.
+calculateSum: Sums all numbers ≤ 1000.
 
-```
-INPUT: numbers="1***2***3", delimiter="***"
-│
-├─ Replace custom delimiter with commas
-│  │
-│  └─ while (find "***" in string)
-│     ├─ Replace "***" with ","
-│     └─ Continue from next position
-│
-├─ Replace all newlines '\n' with commas ','
-│
-└─ Return: "1,2,3"
-```
+4. Test Suite
 
-### Step 3: parseNumbers()
-**Complexity: CCN = 2**
-
-Converts comma-separated string into vector of integers.
-
-```
-INPUT: "1,2,3"
-│
-├─ Create stringstream with input
-│
-└─ while (getline with ',' delimiter)
-   │
-   ├─ if (!token.empty())
-   │  └─ Convert token to int and add to vector
-   │
-   └─ Continue until end of stream
-│
-OUTPUT: [1, 2, 3]
-```
-
-### Step 4: validateNegatives()
-**Complexity: CCN = 2**
-
-Checks for negative numbers and throws exception if found.
-
-```
-INPUT: [1, -2, 3, -4]
-│
-├─ Scan all numbers for negatives
-│  │
-│  └─ for each number
-│     └─ if (number < 0) → Add to negatives list
-│
-├─ if (negatives found)
-│  │
-│  ├─ Build error message: "negatives not allowed: -2,-4"
-│  └─ throw std::runtime_error(message)
-│
-└─ Continue if no negatives found
-```
-
-### Step 5: calculateSum()
-**Complexity: CCN = 2**
-
-Computes sum while ignoring numbers > 1000.
-
-```
-INPUT: [1, 2, 1001, 3]
-│
-├─ Initialize sum = 0
-│
-├─ for each number
-│  │
-│  └─ if (number <= 1000)
-│     └─ sum += number
-│
-└─ Return sum: 6 (1+2+3, ignoring 1001)
-```
-
-## Test Flow Execution
-
-### test_StringCalculator.cpp Main Function
-
-The test suite follows TDD principles, testing each requirement incrementally:
-
-```
-main()
-│
-├─ Test 1: Empty String
-│  └─ calc.Add("") → Expected: 0
-│
-├─ Test 2-3: Single Numbers
-│  ├─ calc.Add("1") → Expected: 1
-│  └─ calc.Add("5") → Expected: 5
-│
-├─ Test 4-5: Multiple Numbers
-│  ├─ calc.Add("1,2") → Expected: 3
-│  ├─ calc.Add("1,2,3") → Expected: 6
-│  └─ calc.Add("1,2,3,4,5") → Expected: 15
-│
-├─ Test 6: Newline Delimiters
-│  └─ calc.Add("1\n2,3") → Expected: 6
-│
-├─ Test 7-8: Ignore Large Numbers
-│  ├─ calc.Add("2,1001") → Expected: 2
-│  └─ calc.Add("1,2,1001,3,1500") → Expected: 6
-│
-├─ Test 9-10: Negative Number Exceptions
-│  ├─ calc.Add("1,-2,3,-4") → Exception: "negatives not allowed: -2,-4"
-│  └─ calc.Add("-5") → Exception: "negatives not allowed: -5"
-│
-├─ Test 11-12: Custom Single-Char Delimiters
-│  ├─ calc.Add("//;\n1;2") → Expected: 3
-│  └─ calc.Add("//*\n1*2*3") → Expected: 6
-│
-└─ Test 13-14: Custom Multi-Char Delimiters
-   ├─ calc.Add("//[***]\n1***2***3") → Expected: 6
-   └─ calc.Add("//[sep]\n1sep2sep3") → Expected: 6
-```
-
-## Example Execution Trace
-
-### Input: "//[***]\n1***2***3"
-
-```
-1. Add("//[***]\n1***2***3")
-   └─ numbers.empty() → FALSE
-
-2. extractCustomDelimiter("//[***]\n1***2***3", remainingNumbers)
-   ├─ Detect "//" prefix → TRUE
-   ├─ Find newline at position 7
-   ├─ Extract "[***]" → has brackets
-   ├─ Extract "***" from brackets
-   ├─ Set remainingNumbers = "1***2***3"
-   └─ Return "***"
-
-3. replaceDelimiters("1***2***3", "***")
-   ├─ Replace "***" with "," → "1,2,3"
-   ├─ Replace newlines → no change needed
-   └─ Return "1,2,3"
-
-4. parseNumbers("1,2,3")
-   ├─ Split on commas
-   ├─ Convert each token to int
-   └─ Return [1, 2, 3]
-
-5. validateNegatives([1, 2, 3])
-   ├─ Check for negatives → NONE found
-   └─ Continue processing
-
-6. calculateSum([1, 2, 3])
-   ├─ All numbers ≤ 1000
-   ├─ Sum: 1 + 2 + 3 = 6
-   └─ Return 6
-
-RESULT: 6
-```
-
-## Key Design Principles Applied
-
-1. **Single Responsibility**: Each function has one clear purpose
-2. **Low Complexity**: All functions maintain CCN ≤ 3
-3. **Separation of Concerns**: Parsing, validation, and calculation are separate
-4. **Exception Safety**: Proper error handling with meaningful messages
-5. **Testability**: Each function can be tested independently
-6. **Maintainability**: Clear function names and logical flow
-7. **DRY Principle**: No code duplication
-8. **Open/Closed**: Easy to extend with new delimiter types
-
-## TDD Benefits Demonstrated
-
-- **Red-Green-Refactor**: Each feature started with failing tests
-- **Incremental Development**: Built complexity gradually
-- **Regression Safety**: All tests pass after refactoring
-- **Documentation**: Tests serve as living specification
-- **Quality Assurance**: High confidence in correctness
-
-## Compilation and Execution
-
-```bash
-# Compile
-cl /EHsc test_StringCalculator.cpp StringCalculator.cpp /Fe:test.exe
-
-# Run tests
-./test.exe
-```
-
-The code demonstrates professional C++ development practices with emphasis on maintainability, testability, and clean architecture.
+The test file runs 14 test cases, covering:
+   Empty input
+   Single and multiple numbers
+   Newline delimiters
+   Ignoring numbers > 1000
+   Negative number exceptions
+   Custom single and multi-character delimiters

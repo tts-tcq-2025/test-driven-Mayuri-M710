@@ -9,27 +9,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: install coverage tool
+    
+    - name: install build tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcovr
-    - name: setup cmake
-      run: sudo apt install cmake
+        sudo apt-get install -y build-essential g++
 
-    - name: build
+    - name: build with g++
       run: |
-        cmake -S . -B build
-        cmake --build build
+        g++ -std=c++17 -Wall -Wextra -O2 test_StringCalculator.cpp StringCalculator.cpp -o test_stringcalculator
       
-    - name: run
-      run: build/test-monitor
+    - name: run tests
+      run: ./test_stringcalculator
 
-    - name: collect coverage
-      run: gcovr --gcov-exclude=".*test.*" -r . --html --html-details -o coverage.html --print-summary
-
-    - name: create coverage artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage
-        path: ./*.html
-        retention-days: 7
+    - name: verify build artifacts
+      run: |
+        echo "Build completed successfully"
+        ls -la test_stringcalculator
